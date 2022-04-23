@@ -23,7 +23,9 @@ app.UseHttpsRedirection();
 var keyVaultName = app.Configuration.GetSection("KeyVaultName");
 var kvUri = "https://" + keyVaultName.Value + ".vault.azure.net";
 
-var client = new SecretClient(new Uri(kvUri), new DefaultAzureCredential());
+var userAssignedClientId = app.Configuration.GetSection("UserAssignedClientId");
+
+var client = new SecretClient(new Uri(kvUri), new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userAssignedClientId.Value}));
 
 var secret = await client.GetSecretAsync("TestSecret");
 
